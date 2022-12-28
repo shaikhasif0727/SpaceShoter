@@ -36,3 +36,22 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 }
+
+task copyApk(type: Copy)
+{
+    def sourceDir = layout.buildDirectory.dir("intermediates/apk/debug/app-debug.apk")
+    def destDir = "$rootDir/apk"
+    from sourceDir
+    into destDir
+    rename "app-debug.apk", "gradle-experiment.apk"
+    doLast {
+        def file = new File(destDir, "gradle-experiment.apk")
+        ant.checksum file: file.path
+    }
+}
+
+tasks.whenTaskAdded { task ->
+    if(task.name == "assembleDebug") {
+        task.finalizedBy "copyApk"
+    }
+}
