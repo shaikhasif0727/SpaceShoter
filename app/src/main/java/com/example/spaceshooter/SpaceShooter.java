@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class SpaceShooter extends View {
+    public final String TAG = "SpaceShooter";
     Context context;
     Bitmap background,lifeImage;
     Handler handler;
@@ -94,9 +96,12 @@ public class SpaceShooter extends View {
             enemyShots.add(enemyShot);
             enemyShotAction = true;
         }
+
         if(!enemyExplosion){
             canvas.drawBitmap(enemySpaceship.getEnemySpaceship(),enemySpaceship.ex,enemySpaceship.ey,null);
         }
+
+        //drawing our ship
         if(ourSpaceship.isAlive = true){
             if(ourSpaceship.ox > screenWidth - ourSpaceship.getOurSpaceshipWidth()){
                 ourSpaceship.ox = screenWidth - ourSpaceship.getOurSpaceshipWidth();
@@ -104,10 +109,18 @@ public class SpaceShooter extends View {
                 ourSpaceship.ox = 0;
             }
             canvas.drawBitmap(ourSpaceship.getOurSpaceship(),ourSpaceship.ox,ourSpaceship.oy,null);
+            ourSpaceship.shipFrame++;
+            if(ourSpaceship.shipFrame >= 10)
+            {
+                ourSpaceship.shipFrame = 0;
+            }
         }
+
+        // drawing enemy shots
         for (int i=0; i<enemyShots.size(); i++){
             enemyShots.get(i).shy += 15;
             canvas.drawBitmap(enemyShots.get(i).getShot(), enemyShots.get(i).shx,enemyShots.get(i).shy,null);
+            // checking if enemyshots hit ourship
             if(
                     (enemyShots.get(i).shx >= ourSpaceship.ox)
                     && (enemyShots.get(i).shx <= ourSpaceship.ox + ourSpaceship.getOurSpaceshipWidth())
@@ -126,6 +139,7 @@ public class SpaceShooter extends View {
             }
         }
 
+        // drawing ours shots
         for (int i = 0; i <ourShots.size() ; i++) {
             ourShots.get(i).shy -= 15;
             canvas.drawBitmap(ourShots.get(i).getShot(),ourShots.get(i).shx,ourShots.get(i).shy,null);
@@ -151,6 +165,7 @@ public class SpaceShooter extends View {
                     explosions.get(i).ey,
                     null
                     );
+            Log.e(TAG, "onDraw: explosionFrame"+explosions.get(i).explosionFrame );
             explosions.get(i).explosionFrame++;
             if(explosions.get(i).explosionFrame > 8){
                 explosions.remove(i);
